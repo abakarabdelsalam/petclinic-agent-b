@@ -20,7 +20,6 @@ run-pr.js
 | `claude-client.js` | Claude réel ou simulé, calcul du coût |
 | `mcp-tools.js` | Client MCP vers `mcp-server/` |
 | `api-runner.js` | Arrêt, démarrage et attente de l'API (port 9966) |
-| `Jenkinsfile` | Pipeline : PR → agent → commentaire GitHub |
 
 ## Choix
 
@@ -32,7 +31,7 @@ run-pr.js
 ## Commandes
 
 ```powershell
-cd agent-b; npm install; npm test        # 17 tests, sans réseau ni API payante
+cd agent-b; npm install; npm test        # 19 tests, sans réseau ni API payante
 node run-pr.js                           # teste la PR présente dans petclinic-rest (mode simulé)
 node run-pr.js --no-restart              # sans redémarrer l'API
 ```
@@ -55,4 +54,4 @@ Modèle : `claude-haiku-4-5` par défaut (`CLAUDE_MODEL` pour changer). Prix : 1
 
 ## Jenkins
 
-`Jenkinsfile` suppose un agent Windows avec Node 24, Java, Maven, git et `gh`, et deux identifiants Jenkins : `anthropic-api-key` et `github-token`. Paramètres : `PR_BRANCH`, `BASE_BRANCH`, `PR_NUMBER`. `DIFF_BASE=origin/<base>` fait lire à l'agent le diff de la PR commitée. Résultat : build vert, instable si régression confirmée, rouge si l'agent tombe.
+Les pipelines sont dans `../jenkins/` (voir le README principal). Code de sortie de `run-pr.js` : build vert, instable si régression confirmée, rouge si l'agent tombe.

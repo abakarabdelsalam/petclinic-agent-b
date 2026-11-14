@@ -7,14 +7,15 @@ Un agent IA qui teste si une PR sur l'API Spring Boot de PetClinic casse le fron
 | Dossier | Rôle |
 |---------|------|
 | `mcp-server/` | Serveur MCP Playwright + API : navigation, appels HTTP, lecture du diff |
-| `agent-b/` | Agent de non-régression, vérificateur, Jenkinsfile |
-| `evaluation-b/` | Corpus de PR (réglage et contrôle) et script de mesure |
+| `agent-b/` | Agent de non-régression et vérificateur |
+| `evaluation-b/` | Corpus de PR (réglage, contrôle, vierge) et script de mesure |
+| `jenkins/` | Image Docker de Jenkins, pipeline de tests et pipeline de PR |
 
 ## Prérequis
 
 PetClinic doit être cloné à côté, puis lancé :
-- `petclinic-rest` (API, port 9966) : `spring-projects/spring-petclinic-rest`
-- `petclinic-angular` (front, port 4300) : `spring-projects/spring-petclinic-angular`
+- `petclinic-rest` (API, port 9966) : `spring-petclinic/spring-petclinic-rest`
+- `petclinic-angular` (front, port 4300) : `spring-petclinic/spring-petclinic-angular`
 
 Indiquer leur emplacement si ce n'est pas `..\petclinic-rest` :
 ```powershell
@@ -32,9 +33,9 @@ cd evaluation-b; npm install; cd ..
 ## Tests (sans PetClinic, sans coût)
 
 ```powershell
-cd mcp-server; npm test     # 27 tests
-cd ..\agent-b; npm test     # 17 tests
-cd ..\evaluation-b; npm test  # 7 tests
+cd mcp-server; npm test     # 29 tests
+cd ..\agent-b; npm test     # 19 tests
+cd ..\evaluation-b; npm test  # 11 tests, dont 2 ignorés si PETCLINIC_REPO n'est pas défini
 ```
 
 ## Mesure
@@ -55,9 +56,10 @@ node evaluate.js                           # corpus de contrôle
 | Corpus | Régressions | Fausses alertes | Coût |
 |--------|-------------|-----------------|------|
 | Réglage, run 2 | 7/10 | 0/5 | 0,92 $ |
-| Contrôle inédit | 2/4 | 0/2 | 0,32 $ |
+| Contrôle, deux runs | 2/4 | 0/2 | 0,33 $ |
+| Vierge (jamais vu avant le run) | 3/3 | 0/2 | 0,35 $ |
 
-Le corpus de réglage a servi à ajuster les prompts : son score est optimiste. Le corpus de contrôle est le chiffre à retenir. Détails et limites : `evaluation-b/README.md`.
+Le corpus de réglage a servi à ajuster les prompts : son score est optimiste. Le corpus vierge est le plus fiable, mais petit (3 régressions, un seul run). Le score du corpus vierge est relu à la main, le script n'ayant pas les termes attendus pour ce corpus. Détails et limites : `evaluation-b/README.md`.
 
 ## Jenkins
 
