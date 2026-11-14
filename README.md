@@ -71,6 +71,7 @@ docker run -d --name jenkins -p 8080:8080 -v jenkins_home:/var/jenkins_home -v D
 | Pipeline | Rôle | Résultat |
 |----------|------|----------|
 | `jenkins/Jenkinsfile.ci` | Tests unitaires des trois modules | Vert |
-| `jenkins/Jenkinsfile.pr` | Applique une PR simulée, lance PetClinic et l'agent, archive le rapport | F03 en mode réel : régression confirmée, build instable, 0,061 $ |
+| `jenkins/Jenkinsfile.pr` sans `PR_NUMBER` | Applique une PR simulée du corpus, lance PetClinic et l'agent | F03 en mode réel : régression confirmée, build instable, 0,061 $ |
+| `jenkins/Jenkinsfile.pr` avec `PR_NUMBER` | Récupère une vraie PR du fork GitHub, la teste, publie le rapport en commentaire | PR #1 du fork : régression confirmée, commentaire publié (HTTP 201), 0,071 $ |
 
-Le mode réel lit la clé dans l'identifiant Jenkins `anthropic-api-key`. La publication du commentaire sur une vraie PR GitHub n'est pas branchée.
+Identifiants Jenkins attendus : `anthropic-api-key` (mode réel) et `github-token` (jeton à portée réduite au fork, permission « Pull requests : Read and write »). Le déclenchement reste manuel : un webhook GitHub demanderait un Jenkins joignable depuis Internet.
