@@ -1,8 +1,12 @@
-// Pipeline de non-régression : applique une PR simulée sur PetClinic, lance l'agent, archive son rapport.
+// Pipeline de non-régression. Deux modes :
+// - PR_NUMBER vide : applique une PR simulée du corpus sur PetClinic (démo, mesure) ;
+// - PR_NUMBER rempli : teste la vraie PR du fork GitHub et y publie le rapport.
 pipeline {
   agent any
 
   parameters {
+    string(name: 'PR_NUMBER', defaultValue: '', description: 'Numéro de la PR GitHub à tester (vide = PR simulée)')
+    string(name: 'FORK_REPO', defaultValue: 'abakarabdelsalam/spring-petclinic-rest', description: 'Dépôt GitHub de la PR')
     string(name: 'MUTATION', defaultValue: 'F03', description: 'PR simulée à tester (identifiant dans le corpus)')
     choice(name: 'CORPUS', choices: ['mutations-clean.json', 'mutations-fresh.json', 'mutations-holdout.json', 'mutations.json'])
     choice(name: 'CLAUDE_MODE', choices: ['fake', 'real'], description: 'real appelle Claude et coûte de l\'argent')
@@ -23,9 +27,16 @@ pipeline {
         sh '''
           rm -rf src && git clone --depth 1 file:///repo src
           [ -d petclinic-rest ] || git clone https://github.com/spring-petclinic/spring-petclinic-rest.git petclinic-rest
-          git -C petclinic-rest checkout -q -f a4cb2c8
           [ -d petclinic-angular ] || git clone https://github.com/spring-petclinic/spring-petclinic-angular.git petclinic-angular
           git -C petclinic-angular checkout -q -f 306b4df
+          if [ -n "$PR_NUMBER" ]; then
+            # Détacher d'abord : git refuse de réécrire la branche actuellement extraite.
+            git -C petclinic-rest checkout -q -f --detach
+            git -C petclinic-rest fetch -q "https://github.com/$FORK_REPO.git" master:pr-base "pull/$PR_NUMBER/head:pr-$PR_NUMBER" --force
+            git -C petclinic-rest checkout -q -f "pr-$PR_NUMBER"
+          else
+            git -C petclinic-rest checkout -q -f a4cb2c8
+          fi
         '''
       }
     }
@@ -53,7 +64,8 @@ pipeline {
       }
     }
 
-    stage('Appliquer la PR') {
+    stage('Appliquer la PR simulée') {
+      when { expression { !params.PR_NUMBER?.trim() } }
       steps {
         dir('src/evaluation-b') {
           sh 'node mutate.js reset && node mutate.js apply "$MUTATION" && git -C "$PETCLINIC_REPO" diff --stat'
@@ -64,7 +76,9 @@ pipeline {
     stage('Tester la PR') {
       steps {
         script {
-          def runAgent = { sh(returnStatus: true, script: 'cd src/agent-b && node run-pr.js') }
+          // Vraie PR : le diff est lu entre la branche principale du fork et la branche de la PR.
+          def diffEnv = params.PR_NUMBER?.trim() ? ['DIFF_BASE=pr-base'] : []
+          def runAgent = { withEnv(diffEnv) { sh(returnStatus: true, script: 'cd src/agent-b && node run-pr.js') } }
           def code
           if (params.CLAUDE_MODE == 'real') {
             withCredentials([string(credentialsId: 'anthropic-api-key', variable: 'ANTHROPIC_API_KEY')]) { code = runAgent() }
@@ -74,6 +88,23 @@ pipeline {
           // 0 = aucune régression, 1 = régression confirmée, 2 = panne de l'agent.
           if (code == 1) { unstable('Régression confirmée par l\'agent') }
           else if (code != 0) { error('L\'agent a échoué') }
+        }
+      }
+    }
+
+    stage('Commenter la PR') {
+      when { expression { params.PR_NUMBER?.trim() } }
+      steps {
+        withCredentials([string(credentialsId: 'github-token', variable: 'GH_TOKEN')]) {
+          // Guillemets simples : le jeton reste une variable du shell, jamais interpolée par Groovy.
+          sh '''
+            node -e "process.stdout.write(JSON.stringify({ body: require('fs').readFileSync('src/agent-b/resultats/commentaire-pr.md', 'utf8') }))" > comment.json
+            code=$(curl -s -o comment-response.json -w "%{http_code}" -X POST \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/$FORK_REPO/issues/$PR_NUMBER/comments" -d @comment.json)
+            echo "GitHub a répondu $code"
+            [ "$code" = "201" ]
+          '''
         }
       }
     }
