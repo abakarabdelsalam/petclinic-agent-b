@@ -1,0 +1,231 @@
+{
+  "_avertissement": "Corrigé du Projet B. L'agent ne doit jamais lire ce fichier : il ne voit que le git diff de la PR.",
+  "base": "a4cb2c8",
+  "mutations": [
+    {
+      "id": "R01",
+      "type": "regression",
+      "titre": "Alléger le mapping des propriétaires",
+      "impact": "Le téléphone disparaît de toutes les réponses Owner : colonne Telephone vide dans la liste et la fiche propriétaire.",
+      "detectable_par": "api et front",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java",
+          "find": "    OwnerDto toOwnerDto(Owner owner);",
+          "replace": "    @Mapping(target = \"telephone\", ignore = true)\n    OwnerDto toOwnerDto(Owner owner);"
+        }
+      ]
+    },
+    {
+      "id": "R02",
+      "type": "regression",
+      "titre": "Ignorer les recherches par nom vides",
+      "impact": "Le filtre lastName est ignoré dès qu'il est renseigné : « Find Owner » par nom renvoie tous les propriétaires.",
+      "detectable_par": "api et front",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/OwnerRestControllerV1.java",
+          "find": "        if (lastName != null) {",
+          "replace": "        if (lastName != null && lastName.isBlank()) {"
+        }
+      ]
+    },
+    {
+      "id": "R03",
+      "type": "regression",
+      "titre": "Simplifier la mise à jour d'un propriétaire",
+      "impact": "PUT /owners/{id} n'enregistre plus la ville : modifier la ville dans « Edit Owner » est sans effet.",
+      "detectable_par": "api et front",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/OwnerRestControllerV1.java",
+          "find": "        currentOwner.setCity(ownerFieldsDto.getCity());\n",
+          "replace": ""
+        }
+      ]
+    },
+    {
+      "id": "R04",
+      "type": "regression",
+      "titre": "Réduire la taille des réponses vétérinaires",
+      "impact": "Les spécialités ne sont plus renvoyées : la colonne Specialties de la page Veterinarians est vide.",
+      "detectable_par": "api et front",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/mapper/VetMapper.java",
+          "find": "    VetDto toVetDto(Vet vet);",
+          "replace": "    @Mapping(target = \"specialties\", ignore = true)\n    VetDto toVetDto(Vet vet);"
+        }
+      ]
+    },
+    {
+      "id": "R05",
+      "type": "regression",
+      "titre": "Passer les téléphones au format international",
+      "impact": "Le contrat exige +XXXXXXXXXXX : créer ou modifier un propriétaire avec 10 chiffres (seul format accepté par le front) renvoie 400.",
+      "detectable_par": "api et front",
+      "edits": [
+        {
+          "file": "src/main/resources/openapi.yml",
+          "find": "          pattern: '^[0-9]{10}$'",
+          "replace": "          pattern: '^\\+[0-9]{11}$'"
+        }
+      ]
+    },
+    {
+      "id": "R06",
+      "type": "regression",
+      "titre": "Harmoniser les URL en kebab-case",
+      "impact": "/pettypes devient /pet-types : le front (qui appelle /pettypes) reçoit 404, page Pet Types vide et liste des types vide dans « Add Pet ».",
+      "detectable_par": "api et front",
+      "edits": [
+        {
+          "file": "src/main/resources/openapi.yml",
+          "find": "  /pettypes:\n",
+          "replace": "  /pet-types:\n"
+        },
+        {
+          "file": "src/main/resources/openapi.yml",
+          "find": "  /pettypes/{petTypeId}:\n",
+          "replace": "  /pet-types/{petTypeId}:\n"
+        }
+      ]
+    },
+    {
+      "id": "R07",
+      "type": "regression",
+      "titre": "Nettoyer les annotations du contrôleur des types",
+      "impact": "Plus de CORS sur /pettypes : l'API répond toujours en direct, mais le navigateur bloque l'appel depuis le front (Pet Types et « Add Pet » cassés).",
+      "detectable_par": "front uniquement",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/PetTypeRestControllerV1.java",
+          "find": "@CrossOrigin(exposedHeaders = \"errors, content-type\")\n",
+          "replace": ""
+        }
+      ]
+    },
+    {
+      "id": "R08",
+      "type": "regression",
+      "titre": "Éviter le chargement des visites dans les animaux",
+      "impact": "Les visites ne sont plus renvoyées avec les animaux : la fiche propriétaire n'affiche plus aucune visite.",
+      "detectable_par": "api et front",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/mapper/PetMapper.java",
+          "find": "    @Mapping(source = \"owner.id\", target = \"ownerId\")\n    PetDto toPetDto(Pet pet);",
+          "replace": "    @Mapping(source = \"owner.id\", target = \"ownerId\")\n    @Mapping(target = \"visits\", ignore = true)\n    PetDto toPetDto(Pet pet);"
+        }
+      ]
+    },
+    {
+      "id": "R09",
+      "type": "regression",
+      "titre": "Limiter la taille des descriptions de visite",
+      "impact": "Une nouvelle visite voit sa description tronquée à 15 caractères sans message d'erreur.",
+      "detectable_par": "api et front",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/OwnerRestControllerV1.java",
+          "find": "        Visit visit = visitMapper.toVisit(visitFieldsDto);\n        Pet pet = new Pet();",
+          "replace": "        Visit visit = visitMapper.toVisit(visitFieldsDto);\n        visit.setDescription(visit.getDescription().substring(0, Math.min(visit.getDescription().length(), 15)));\n        Pet pet = new Pet();"
+        }
+      ]
+    },
+    {
+      "id": "R10",
+      "type": "regression",
+      "titre": "Activer la sécurité par défaut",
+      "impact": "Toute l'API exige une authentification Basic : le front reçoit 401 sur chaque écran.",
+      "detectable_par": "api et front",
+      "edits": [
+        {
+          "file": "src/main/resources/application.properties",
+          "find": "petclinic.security.enable=false",
+          "replace": "petclinic.security.enable=true"
+        }
+      ]
+    },
+    {
+      "id": "S01",
+      "type": "saine",
+      "titre": "Documenter le contrôleur des propriétaires",
+      "impact": "Aucun : commentaire seulement.",
+      "detectable_par": "aucun",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/OwnerRestControllerV1.java",
+          "find": " * @author Vitaliy Fedoriv\n */",
+          "replace": " * @author Vitaliy Fedoriv\n *\n * REST entry point for owners, their pets and their visits.\n */"
+        }
+      ]
+    },
+    {
+      "id": "S02",
+      "type": "saine",
+      "titre": "Renommer une variable dans addOwner",
+      "impact": "Aucun : renommage d'une variable locale.",
+      "detectable_par": "aucun",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/OwnerRestControllerV1.java",
+          "find": "        HttpHeaders headers = new HttpHeaders();\n        Owner owner = ownerMapper.toOwner(ownerFieldsDto);",
+          "replace": "        HttpHeaders responseHeaders = new HttpHeaders();\n        Owner owner = ownerMapper.toOwner(ownerFieldsDto);"
+        },
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/OwnerRestControllerV1.java",
+          "find": "        headers.setLocation(UriComponentsBuilder.newInstance()\n            .path(\"/api/owners/{id}\")",
+          "replace": "        responseHeaders.setLocation(UriComponentsBuilder.newInstance()\n            .path(\"/api/owners/{id}\")"
+        },
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/OwnerRestControllerV1.java",
+          "find": "new ResponseEntity<>(ownerDto, headers, HttpStatus.CREATED);",
+          "replace": "new ResponseEntity<>(ownerDto, responseHeaders, HttpStatus.CREATED);"
+        }
+      ]
+    },
+    {
+      "id": "S03",
+      "type": "saine",
+      "titre": "Préciser la documentation du téléphone",
+      "impact": "Aucun : texte de description OpenAPI.",
+      "detectable_par": "aucun",
+      "edits": [
+        {
+          "file": "src/main/resources/openapi.yml",
+          "find": "accepts exactly 10 digits, without separators or an international prefix.",
+          "replace": "accepts exactly 10 digits (for example 6085551023), without separators or an international prefix."
+        }
+      ]
+    },
+    {
+      "id": "S04",
+      "type": "saine",
+      "titre": "Fixer le niveau de journalisation de l'application",
+      "impact": "Aucun : niveau de log.",
+      "detectable_par": "aucun",
+      "edits": [
+        {
+          "file": "src/main/resources/application.properties",
+          "find": "petclinic.security.enable=false",
+          "replace": "petclinic.security.enable=false\nlogging.level.org.springframework.samples.petclinic=INFO"
+        }
+      ]
+    },
+    {
+      "id": "S05",
+      "type": "saine",
+      "titre": "Ajouter une vétérinaire aux données de démo",
+      "impact": "Aucun défaut : 7 vétérinaires au lieu de 6, c'est le changement voulu. Piège à faux positif.",
+      "detectable_par": "aucun",
+      "edits": [
+        {
+          "file": "src/main/resources/db/h2/data.sql",
+          "find": "('Sharon', 'Jenkins');",
+          "replace": "('Sharon', 'Jenkins'),\n('Maria', 'Escobito');"
+        }
+      ]
+    }
+  ]
+}

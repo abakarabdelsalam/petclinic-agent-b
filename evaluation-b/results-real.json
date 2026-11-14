@@ -1,0 +1,212 @@
+{
+  "date": "2026-11-13T21:58:20.579Z",
+  "mode": "real",
+  "modele": "claude-haiku-4-5",
+  "regressions_detectees": "7/10",
+  "faux_positifs": "0/5",
+  "duree_moyenne_s": 62,
+  "cout_total_usd": 0.9237,
+  "details": [
+    {
+      "id": "R01",
+      "type": "regression",
+      "impact": "Le téléphone disparaît de toutes les réponses Owner : colonne Telephone vide dans la liste et la fiche propriétaire.",
+      "correct": true,
+      "confirmees": [
+        "Le numéro de téléphone des propriétaires est toujours null dans l'API"
+      ],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 30,
+      "dureeS": 86,
+      "coutUsd": 0.0585
+    },
+    {
+      "id": "R02",
+      "type": "regression",
+      "impact": "Le filtre lastName est ignoré dès qu'il est renseigné : « Find Owner » par nom renvoie tous les propriétaires.",
+      "correct": true,
+      "confirmees": [
+        "Recherche de propriétaire par nom de famille ne filtre pas les résultats"
+      ],
+      "rejetees": [],
+      "arret": "termine",
+      "actions": 25,
+      "dureeS": 78,
+      "coutUsd": 0.0622
+    },
+    {
+      "id": "R03",
+      "type": "regression",
+      "impact": "PUT /owners/{id} n'enregistre plus la ville : modifier la ville dans « Edit Owner » est sans effet.",
+      "correct": true,
+      "confirmees": [
+        "Modification de la ville d'un propriétaire ignorée"
+      ],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 30,
+      "dureeS": 83,
+      "coutUsd": 0.0906
+    },
+    {
+      "id": "R04",
+      "type": "regression",
+      "impact": "Les spécialités ne sont plus renvoyées : la colonne Specialties de la page Veterinarians est vide.",
+      "correct": false,
+      "confirmees": [],
+      "rejetees": [
+        "Les spécialités des vétérinaires ne sont pas retournées par l'API"
+      ],
+      "arret": "termine",
+      "actions": 21,
+      "dureeS": 63,
+      "coutUsd": 0.0742
+    },
+    {
+      "id": "R05",
+      "type": "regression",
+      "impact": "Le contrat exige +XXXXXXXXXXX : créer ou modifier un propriétaire avec 10 chiffres (seul format accepté par le front) renvoie 400.",
+      "correct": true,
+      "confirmees": [
+        "Propriétaires existants non modifiables après changement du format téléphone",
+        "Impossibilité de créer des propriétaires avec le nouveau format de téléphone requis"
+      ],
+      "rejetees": [],
+      "arret": "termine",
+      "actions": 24,
+      "dureeS": 79,
+      "coutUsd": 0.0896
+    },
+    {
+      "id": "R06",
+      "type": "regression",
+      "impact": "/pettypes devient /pet-types : le front (qui appelle /pettypes) reçoit 404, page Pet Types vide et liste des types vide dans « Add Pet ».",
+      "correct": true,
+      "confirmees": [
+        "Page PET TYPES : liste vide et erreur serveur après renommage URL /pettypes → /pet-types",
+        "Formulaire d'ajout d'animal : liste \"Type\" vide après renommage URL /pettypes → /pet-types"
+      ],
+      "rejetees": [],
+      "arret": "termine",
+      "actions": 14,
+      "dureeS": 61,
+      "coutUsd": 0.0656
+    },
+    {
+      "id": "R07",
+      "type": "regression",
+      "impact": "Plus de CORS sur /pettypes : l'API répond toujours en direct, mais le navigateur bloque l'appel depuis le front (Pet Types et « Add Pet » cassés).",
+      "correct": true,
+      "confirmees": [
+        "Suppression de @CrossOrigin bloque les appels CORS à pettypes"
+      ],
+      "rejetees": [],
+      "arret": "termine",
+      "actions": 11,
+      "dureeS": 51,
+      "coutUsd": 0.0472
+    },
+    {
+      "id": "R08",
+      "type": "regression",
+      "impact": "Les visites ne sont plus renvoyées avec les animaux : la fiche propriétaire n'affiche plus aucune visite.",
+      "correct": true,
+      "confirmees": [
+        "Champ visits toujours vide dans les réponses GET /pets/{id}",
+        "Page propriétaire affiche \"No visits yet\" pour tous les animaux, même ceux avec des visites"
+      ],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 30,
+      "dureeS": 80,
+      "coutUsd": 0.0792
+    },
+    {
+      "id": "R09",
+      "type": "regression",
+      "impact": "Une nouvelle visite voit sa description tronquée à 15 caractères sans message d'erreur.",
+      "correct": false,
+      "confirmees": [],
+      "rejetees": [
+        "Description de visite tronquée à 15 caractères sans avertissement"
+      ],
+      "arret": "limite_actions",
+      "actions": 30,
+      "dureeS": 70,
+      "coutUsd": 0.0826
+    },
+    {
+      "id": "R10",
+      "type": "regression",
+      "impact": "Toute l'API exige une authentification Basic : le front reçoit 401 sur chaque écran.",
+      "correct": false,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 30,
+      "dureeS": 49,
+      "coutUsd": 0.0533
+    },
+    {
+      "id": "S01",
+      "type": "saine",
+      "impact": "Aucun : commentaire seulement.",
+      "correct": true,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 30,
+      "dureeS": 47,
+      "coutUsd": 0.0399
+    },
+    {
+      "id": "S02",
+      "type": "saine",
+      "impact": "Aucun : renommage d'une variable locale.",
+      "correct": true,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "termine",
+      "actions": 29,
+      "dureeS": 55,
+      "coutUsd": 0.0497
+    },
+    {
+      "id": "S03",
+      "type": "saine",
+      "impact": "Aucun : texte de description OpenAPI.",
+      "correct": true,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 30,
+      "dureeS": 47,
+      "coutUsd": 0.0415
+    },
+    {
+      "id": "S04",
+      "type": "saine",
+      "impact": "Aucun : niveau de log.",
+      "correct": true,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 30,
+      "dureeS": 46,
+      "coutUsd": 0.0521
+    },
+    {
+      "id": "S05",
+      "type": "saine",
+      "impact": "Aucun défaut : 7 vétérinaires au lieu de 6, c'est le changement voulu. Piège à faux positif.",
+      "correct": true,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "termine",
+      "actions": 13,
+      "dureeS": 40,
+      "coutUsd": 0.0375
+    }
+  ]
+}

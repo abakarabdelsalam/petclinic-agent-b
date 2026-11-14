@@ -1,0 +1,12 @@
+{
+  "name": "petclinic-evaluation",
+  "version": "1.0.0",
+  "description": "Corpus de PR (régressions et PR saines) pour mesurer l'agent de non-régression",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node --test",
+    "verify": "node verify-mutations.js",
+    "evaluate": "node evaluate.js"
+  }
+}

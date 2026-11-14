@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-13T11:53:45.395Z",
+  "mode": "fake",
+  "modele": "claude-haiku-4-5",
+  "regressions_detectees": "0/1",
+  "faux_positifs": "0/0",
+  "duree_moyenne_s": 34,
+  "cout_total_usd": 0,
+  "details": [
+    {
+      "id": "R04",
+      "type": "regression",
+      "impact": "Les spécialités ne sont plus renvoyées : la colonne Specialties de la page Veterinarians est vide.",
+      "correct": false,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "termine",
+      "actions": 4,
+      "dureeS": 34,
+      "coutUsd": 0
+    }
+  ]
+}

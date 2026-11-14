@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "petclinic-playwright": {
+      "command": "node",
+      "args": ["mcp-server/server.js"]
+    }
+  }
+}

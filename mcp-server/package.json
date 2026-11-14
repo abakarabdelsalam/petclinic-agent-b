@@ -1,0 +1,16 @@
+{
+  "name": "petclinic-playwright-mcp",
+  "version": "1.0.0",
+  "description": "Serveur MCP qui expose Playwright pour tester PetClinic",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "playwright": "1.65.0",
+    "zod": "4.6.7"
+  }
+}

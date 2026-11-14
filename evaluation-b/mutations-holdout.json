@@ -1,0 +1,90 @@
+{
+  "_avertissement": "Corpus de contrôle : jamais utilisé pour régler les prompts ni le vérificateur. Ne pas le lire pendant les réglages.",
+  "base": "a4cb2c8",
+  "mutations": [
+    {
+      "id": "H01",
+      "type": "regression",
+      "titre": "Fiche vétérinaire renvoyée en 404",
+      "impact": "GET vets/{id} répond 404 pour un vétérinaire existant : la page d'édition d'un vétérinaire ne charge pas.",
+      "detectable_par": "api et front",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/VetRestControllerV1.java",
+          "find": "return new ResponseEntity<>(vetMapper.toVetDto(vet), HttpStatus.OK);",
+          "replace": "return new ResponseEntity<>(vetMapper.toVetDto(vet), HttpStatus.NOT_FOUND);"
+        }
+      ]
+    },
+    {
+      "id": "H02",
+      "type": "regression",
+      "titre": "Animal ajouté sans lien avec son propriétaire",
+      "impact": "Un animal ajouté à un propriétaire n'est pas rattaché à lui : il n'apparaît pas sur la fiche propriétaire.",
+      "detectable_par": "api et front",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/OwnerRestControllerV1.java",
+          "find": "owner.setId(ownerId);",
+          "replace": ""
+        }
+      ]
+    },
+    {
+      "id": "H05",
+      "type": "regression",
+      "titre": "Nom de famille non enregistré à la modification",
+      "impact": "PUT owners/{id} n'enregistre plus le nom de famille : modifier le nom dans « Edit Owner » est sans effet.",
+      "detectable_par": "api et front",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/OwnerRestControllerV1.java",
+          "find": "currentOwner.setLastName(ownerFieldsDto.getLastName());",
+          "replace": ""
+        }
+      ]
+    },
+    {
+      "id": "H06",
+      "type": "regression",
+      "titre": "Nom de l'animal non enregistré à la modification",
+      "impact": "PUT owners/{id}/pets/{petId} n'enregistre plus le nom de l'animal : le renommage est sans effet.",
+      "detectable_par": "api et front",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/OwnerRestControllerV1.java",
+          "find": "currentPet.setName(petFieldsDto.getName());",
+          "replace": ""
+        }
+      ]
+    },
+    {
+      "id": "H03",
+      "type": "saine",
+      "titre": "Renommer une variable locale dans listVets",
+      "impact": "Aucun : renommage d'une variable locale.",
+      "detectable_par": "aucun",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/VetRestControllerV1.java",
+          "find": "List<VetDto> vets = new ArrayList<>(vetMapper.toVetDtos(this.clinicService.findAllVets()));\n        if (vets.isEmpty()) {\n            return new ResponseEntity<>(HttpStatus.NOT_FOUND);\n        }\n        return new ResponseEntity<>(vets, HttpStatus.OK);",
+          "replace": "List<VetDto> vetList = new ArrayList<>(vetMapper.toVetDtos(this.clinicService.findAllVets()));\n        if (vetList.isEmpty()) {\n            return new ResponseEntity<>(HttpStatus.NOT_FOUND);\n        }\n        return new ResponseEntity<>(vetList, HttpStatus.OK);"
+        }
+      ]
+    },
+    {
+      "id": "H04",
+      "type": "saine",
+      "titre": "Ajouter une constante inutilisée",
+      "impact": "Aucun : constante privée jamais lue.",
+      "detectable_par": "aucun",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/VetRestControllerV1.java",
+          "find": "public class VetRestControllerV1 implements VetsApi {",
+          "replace": "public class VetRestControllerV1 implements VetsApi {\n\n    private static final int LISTE_MAX = 50;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+{"name":"petclinic-regression-agent","version":"1.0.0","type":"module","private":true,"scripts":{"test":"node --test","agent":"node run-pr.js"},"dependencies":{"@anthropic-ai/sdk":"^1.8.0","@modelcontextprotocol/sdk":"^1.32.2"}}

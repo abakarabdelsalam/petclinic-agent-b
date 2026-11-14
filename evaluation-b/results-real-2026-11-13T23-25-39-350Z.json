@@ -1,0 +1,88 @@
+{
+  "corpus": "mutations-holdout.json",
+  "date": "2026-11-13T23:25:39.350Z",
+  "mode": "real",
+  "modele": "claude-haiku-4-5",
+  "regressions_detectees": "2/4",
+  "faux_positifs": "0/2",
+  "duree_moyenne_s": 62,
+  "cout_total_usd": 0.3156,
+  "details": [
+    {
+      "id": "H01",
+      "type": "regression",
+      "impact": "GET vets/{id} répond 404 pour un vétérinaire existant : la page d'édition d'un vétérinaire ne charge pas.",
+      "correct": true,
+      "confirmees": [
+        "Endpoint GET /vets/{id} retourne le statut HTTP 404 (NOT_FOUND) au lieu de 200 (OK) même quand le vétérinaire est trouvé"
+      ],
+      "rejetees": [],
+      "arret": "termine",
+      "actions": 14,
+      "dureeS": 61,
+      "coutUsd": 0.0543
+    },
+    {
+      "id": "H02",
+      "type": "regression",
+      "impact": "Un animal ajouté à un propriétaire n'est pas rattaché à lui : il n'apparaît pas sur la fiche propriétaire.",
+      "correct": false,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 30,
+      "dureeS": 69,
+      "coutUsd": 0.0531
+    },
+    {
+      "id": "H05",
+      "type": "regression",
+      "impact": "PUT owners/{id} n'enregistre plus le nom de famille : modifier le nom dans « Edit Owner » est sans effet.",
+      "correct": true,
+      "confirmees": [
+        "Modification du lastName d'un propriétaire ignorée lors de l'édition"
+      ],
+      "rejetees": [],
+      "arret": "termine",
+      "actions": 25,
+      "dureeS": 74,
+      "coutUsd": 0.0683
+    },
+    {
+      "id": "H06",
+      "type": "regression",
+      "impact": "PUT owners/{id}/pets/{petId} n'enregistre plus le nom de l'animal : le renommage est sans effet.",
+      "correct": false,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 30,
+      "dureeS": 53,
+      "coutUsd": 0.0594
+    },
+    {
+      "id": "H03",
+      "type": "saine",
+      "impact": "Aucun : renommage d'une variable locale.",
+      "correct": true,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "termine",
+      "actions": 16,
+      "dureeS": 45,
+      "coutUsd": 0.03
+    },
+    {
+      "id": "H04",
+      "type": "saine",
+      "impact": "Aucun : constante privée jamais lue.",
+      "correct": true,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "termine",
+      "actions": 28,
+      "dureeS": 70,
+      "coutUsd": 0.0505
+    }
+  ]
+}
