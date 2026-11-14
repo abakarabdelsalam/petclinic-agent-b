@@ -28,6 +28,15 @@ Chaque remplacement doit trouver son texte **exactement une fois**, sinon il éc
 
 R07 ne se voit que dans le navigateur, ce qui justifie Playwright en plus des appels HTTP. S05 est un piège à faux positif : 7 vétérinaires au lieu de 6, c'est voulu.
 
+## Corpus neuf (non mesuré)
+
+`mutations-fresh.json` : 3 régressions (N01 ville, N02 spécialités, N03 visite refusée) et 2 PR saines. Préparé sans être lancé, à utiliser une seule fois :
+
+```powershell
+$env:CORPUS = "mutations-fresh.json"
+node evaluate.js
+```
+
 ## Résultats mesurés (mode réel, Haiku 4.5)
 
 | Corpus | Régressions | Fausses alertes | Coût | Remarque |

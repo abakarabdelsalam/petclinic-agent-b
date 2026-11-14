@@ -1,0 +1,1188 @@
+{
+  "corpus": "mutations-holdout.json",
+  "date": "2026-11-14T13:02:35.022Z",
+  "mode": "real",
+  "modele": "claude-haiku-4-5",
+  "regressions_detectees": "2/4",
+  "faux_positifs": "0/2",
+  "duree_moyenne_s": 75,
+  "cout_total_usd": 0.3294,
+  "details": [
+    {
+      "id": "H01",
+      "type": "regression",
+      "impact": "GET vets/{id} répond 404 pour un vétérinaire existant : la page d'édition d'un vétérinaire ne charge pas.",
+      "correct": true,
+      "confirmees": [
+        "GET /vets/{id} retourne HTTP 404 au lieu de 200"
+      ],
+      "rejetees": [],
+      "arret": "termine",
+      "actions": 15,
+      "journal": [
+        {
+          "outil": "analyser_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "lire_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/vets"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "vets"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "vets/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Edit Vet"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "capture",
+          "entree": {
+            "nom": "edit_vet_after_click"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/vets/1/edit"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/vets/add"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "signaler_regression",
+          "entree": {
+            "titre": "GET /vets/{id} retourne HTTP 404 au lieu de 200",
+            "ecran_ou_endpoint": "GET /petclinic/api/vets/1",
+            "attendu": "Quand un vétérinaire existe (ex: id=1), l'API doit retourner HTTP 200 avec ses données JSON",
+            "observe": "L'API retourne HTTP 404 Not Found, bien que le corps contient les données correctes {\"firstName\":\"James\",\"lastName\":\"Carter\",\"specialties\":[],\"id\":1}",
+            "etapes": [
+              "Appeler GET /petclinic/api/vets/1"
+            ],
+            "gravite": "bloquante"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "terminer",
+          "entree": {
+            "resume": "La PR introduit une régression bloquante : le endpoint GET /vets/{id} retourne HTTP 404 au lieu de 200 quand le vétérinaire est trouvé. Cela empêche l'édition de vétérinaires au front, qui reçoit une erreur et redirige vers l'accueil. Le bug est dû au remplacement accidentel de HttpStatus.OK par HttpStatus.NOT_FOUND dans le code du contrôleur."
+          },
+          "erreur": false
+        }
+      ],
+      "dureeS": 68,
+      "coutUsd": 0.0412
+    },
+    {
+      "id": "H02",
+      "type": "regression",
+      "impact": "Un animal ajouté à un propriétaire n'est pas rattaché à lui : il n'apparaît pas sur la fiche propriétaire.",
+      "correct": false,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 31,
+      "journal": [
+        {
+          "outil": "analyser_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "lire_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=George Franklin"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Add New Pet"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "input[name=\"name\"]",
+            "texte": "TestPet"
+          },
+          "erreur": true
+        },
+        {
+          "outil": "capture",
+          "entree": {
+            "nom": "pet_add_form"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "owners/1/pets",
+            "corps": {
+              "name": "TestDog",
+              "birthDate": "2020-01-01",
+              "typeId": 1
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "owners/1/pets",
+            "corps": {
+              "name": "TestDog",
+              "birthDate": "2020-01-01",
+              "type": {
+                "id": 1,
+                "name": "cat"
+              }
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners?lastName=Davis"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "owners",
+            "corps": {
+              "firstName": "TestOwner",
+              "lastName": "TestLast",
+              "address": "123 Test St",
+              "city": "TestCity",
+              "telephone": "1234567890"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "PUT",
+            "chemin": "owners/11",
+            "corps": {
+              "firstName": "ModifiedOwner",
+              "lastName": "ModifiedLast",
+              "address": "456 Modified St",
+              "city": "ModifiedCity",
+              "telephone": "9876543210"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners/11"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#lastName",
+            "texte": "Davis"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Find Owner"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Add Owner"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#firstName",
+            "texte": "NewOwner"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#lastName",
+            "texte": "NewLast"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#address",
+            "texte": "999 New St"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#city",
+            "texte": "NewCity"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#telephone",
+            "texte": "5555555555"
+          },
+          "erreur": false
+        }
+      ],
+      "dureeS": 76,
+      "coutUsd": 0.057
+    },
+    {
+      "id": "H05",
+      "type": "regression",
+      "impact": "PUT owners/{id} n'enregistre plus le nom de famille : modifier le nom dans « Edit Owner » est sans effet.",
+      "correct": true,
+      "confirmees": [
+        "Modification du lastName d'un propriétaire ignorée lors d'une mise à jour"
+      ],
+      "rejetees": [],
+      "arret": "termine",
+      "actions": 27,
+      "journal": [
+        {
+          "outil": "analyser_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "lire_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "PUT",
+            "chemin": "owners/1",
+            "corps": {
+              "firstName": "George",
+              "lastName": "TestNom",
+              "address": "110 W. Liberty St.",
+              "city": "Madison",
+              "telephone": "6085551023"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners/1/edit"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#lastName",
+            "texte": "UpdatedLastName"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Update Owner"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "signaler_regression",
+          "entree": {
+            "titre": "Modification du lastName d'un propriétaire ignorée lors d'une mise à jour",
+            "ecran_ou_endpoint": "PUT /petclinic/api/owners/{id} et http://localhost:4300/petclinic/owners/{id}/edit",
+            "attendu": "Lors de la modification d'un propriétaire (PUT /owners/1), le lastName fourni doit être enregistré et reflété dans les données du propriétaire.",
+            "observe": "Après un PUT sur /owners/1 avec \"lastName\": \"TestNom\", le GET /owners/1 retourne toujours \"lastName\": \"Franklin\". De même, via le formulaire d'édition du front (owners/1/edit), modifier le champ \"Last Name\" et cliquer \"Update Owner\" n'enregistre pas le changement (toujours affichage \"George Franklin\").",
+            "etapes": [
+              "GET /petclinic/api/owners/1 pour vérifier lastname initial = Franklin",
+              "PUT /petclinic/api/owners/1 avec {\"lastName\": \"TestNom\"}",
+              "GET /petclinic/api/owners/1 et observer que lastName est toujours Franklin",
+              "OU via front : accéder à /petclinic/owners/1/edit, modifier Last Name, cliquer Update Owner, vérifier que le nom n'a pas changé dans owners/1"
+            ],
+            "gravite": "majeure"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners/add"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#firstName",
+            "texte": "TestFirstName"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#lastName",
+            "texte": "TestLastName"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#address",
+            "texte": "123 Test St"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#city",
+            "texte": "TestCity"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#telephone",
+            "texte": "5551234567"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Add Owner"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#lastName",
+            "texte": "Davis"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Find Owner"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners?lastName=Davis"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "PUT",
+            "chemin": "owners/2",
+            "corps": {
+              "firstName": "BettyModified",
+              "lastName": "DavisModified",
+              "address": "638 Cardinal Ave.",
+              "city": "Sun Prairie",
+              "telephone": "9999999999"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners/2"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "terminer",
+          "entree": {
+            "resume": "Test de la PR terminé. Une régression majeure identifiée :\n\n**Régression trouvée :** La modification du lastName d'un propriétaire via PUT /owners/{id} est ignorée. La ligne `currentOwner.setLastName(ownerFieldsDto.getLastName());` a été supprimée du code, ce qui empêche la mise à jour du champ lastName lors d'une modification de propriétaire.\n\n**Impact :**\n- Écran /petclinic/owners/{id}/edit : impossible de modifier le Last Name (le changement n'est pas enregistré)\n- API PUT /petclinic/api/owners/{id} : le lastName fourni dans le corps de la requête est ignoré\n- Les autres champs (firstName, address, city, telephone) sont mis à jour correctement\n\n**Tests effectués :**\n✓ GET /owners/{id} - fonctionne\n✓ GET /owners?lastName=Davis - recherche fonctionne\n✓ POST /owners - création avec lastName fonctionne\n✗ PUT /owners/{id} - lastName ignoré (RÉGRESSION)\n✓ Écran owners/1/edit - lastName ne se modifie pas\n✓ Écran owners/add - création fonctionne correctement"
+          },
+          "erreur": false
+        }
+      ],
+      "dureeS": 84,
+      "coutUsd": 0.0682
+    },
+    {
+      "id": "H06",
+      "type": "regression",
+      "impact": "PUT owners/{id}/pets/{petId} n'enregistre plus le nom de l'animal : le renommage est sans effet.",
+      "correct": false,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 30,
+      "journal": [
+        {
+          "outil": "analyser_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "lire_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=George Franklin"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Edit Pet"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#name",
+            "texte": "Leo Updated"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Update Pet"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Edit Pet"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#name",
+            "texte": "Leo"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Update Pet"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "PUT",
+            "chemin": "pets/1",
+            "corps": {
+              "name": "Leo PutTest",
+              "birthDate": "2010-09-07",
+              "type": {
+                "name": "cat",
+                "id": 1
+              }
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "PUT",
+            "chemin": "pets/1",
+            "corps": {
+              "name": "",
+              "birthDate": "2010-09-07",
+              "type": {
+                "name": "cat",
+                "id": 1
+              }
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Add New Pet"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "pets",
+            "corps": {
+              "name": "TestPet",
+              "birthDate": "2020-01-01",
+              "type": {
+                "name": "dog",
+                "id": 2
+              },
+              "ownerId": 1
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "owners/1/pets",
+            "corps": {
+              "name": "TestPet",
+              "birthDate": "2020-01-01",
+              "type": {
+                "name": "dog",
+                "id": 2
+              }
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "PUT",
+            "chemin": "pets/14",
+            "corps": {
+              "name": "TestPetModified",
+              "birthDate": "2020-01-01",
+              "type": {
+                "name": "dog",
+                "id": 2
+              }
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "PUT",
+            "chemin": "owners/1/pets/14",
+            "corps": {
+              "name": "TestPetViaOwner",
+              "birthDate": "2020-01-01",
+              "type": {
+                "name": "dog",
+                "id": 2
+              }
+            }
+          },
+          "erreur": false
+        }
+      ],
+      "dureeS": 88,
+      "coutUsd": 0.0716
+    },
+    {
+      "id": "H03",
+      "type": "saine",
+      "impact": "Aucun : renommage d'une variable locale.",
+      "correct": true,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "termine",
+      "actions": 15,
+      "journal": [
+        {
+          "outil": "analyser_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "lire_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/vets"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "vets"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "vets/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/vets/add"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#firstName",
+            "texte": "Test"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#lastName",
+            "texte": "Vet"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "choisir",
+          "entree": {
+            "selecteur": "#specialties",
+            "option": "radiology"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Save Vet"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "vets"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "terminer",
+          "entree": {
+            "resume": "PR testée : renommage de variable locale dans VetRestControllerV1.listVets(). Tous les écrans et appels API concernés testés : listage des vétérinaires, détail d'un vétérinaire, ajout de vétérinaire. Aucune régression détectée. Le comportement de l'API et du front reste identique."
+          },
+          "erreur": false
+        }
+      ],
+      "dureeS": 56,
+      "coutUsd": 0.0306
+    },
+    {
+      "id": "H04",
+      "type": "saine",
+      "impact": "Aucun : constante privée jamais lue.",
+      "correct": true,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "termine",
+      "actions": 26,
+      "journal": [
+        {
+          "outil": "analyser_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "lire_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/vets"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "vets"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Add Vet"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#firstName",
+            "texte": "TestVet"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#lastName",
+            "texte": "Regression"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Save Vet"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "vets/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "vets",
+            "corps": {
+              "firstName": "Test2",
+              "lastName": "Vet2"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "vets",
+            "corps": {
+              "firstName": "John",
+              "lastName": "Smith",
+              "specialties": []
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "vets"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=VETERINARIANS"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "vets"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=ALL"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/vets/8/edit"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/vets"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "terminer",
+          "entree": {
+            "resume": "J'ai testé les changements apportés par la PR qui ajoute une constante `LISTE_MAX = 50` au contrôleur V1 des vétérinaires.\n\n**Écrans et API testés :**\n1. ✅ GET /petclinic/vets - Affichage liste vétérinaires : retourne 8 vétérinaires (6 initiaux + 2 créés lors des tests)\n2. ✅ GET /petclinic/vets/1 - Détail d'un vétérinaire : fonctionne\n3. ✅ POST /petclinic/vets - Création vétérinaire via API : crée John Smith (ID 8) avec HTTP 201\n4. ✅ http://localhost:4300/petclinic/vets - Affichage front liste : 8 vétérinaires visibles\n5. ✅ http://localhost:4300/petclinic/vets/add - Ajout via front : crée TestVet Regression avec succès\n6. ✅ http://localhost:4300/petclinic/vets/8/edit - Édition vétérinaire : accès direct au vétérinaire créé\n\n**Résultats :**\nAucune régression détectée. La constante `LISTE_MAX = 50` a été ajoutée mais n'apparaît pas utilisée dans le diff (seul l'ajout de la déclaration est visible). Toutes les fonctionnalités essentielles (liste, création, récupération, édition) fonctionnent correctement entre l'API et le front. Les données restent cohérentes.\n"
+          },
+          "erreur": false
+        }
+      ],
+      "dureeS": 79,
+      "coutUsd": 0.0608
+    }
+  ]
+}

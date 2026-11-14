@@ -1,0 +1,76 @@
+{
+  "_avertissement": "Corpus neuf, préparé sans être lancé. À utiliser une seule fois pour une mesure honnête : ne pas régler les prompts ni l'analyseur dessus.",
+  "base": "a4cb2c8",
+  "mutations": [
+    {
+      "id": "N01",
+      "type": "regression",
+      "titre": "Nouveau propriétaire sans ville",
+      "impact": "Un propriétaire créé n'a pas de ville : la ville saisie dans « Add Owner » n'est jamais enregistrée.",
+      "detectable_par": "api et front",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/OwnerRestControllerV1.java",
+          "find": "Owner owner = ownerMapper.toOwner(ownerFieldsDto);",
+          "replace": "Owner owner = ownerMapper.toOwner(ownerFieldsDto);\n        owner.setCity(null);"
+        }
+      ]
+    },
+    {
+      "id": "N02",
+      "type": "regression",
+      "titre": "Nouveau vétérinaire sans spécialité",
+      "impact": "Un vétérinaire créé n'a aucune spécialité, même si elles sont cochées dans « Add Vet ».",
+      "detectable_par": "api et front",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/VetRestControllerV1.java",
+          "find": "Vet vet = vetMapper.toVet(vetDto);",
+          "replace": "Vet vet = vetMapper.toVet(vetDto);\n        vet.setSpecialties(new ArrayList<>());"
+        }
+      ]
+    },
+    {
+      "id": "N03",
+      "type": "regression",
+      "titre": "Ajout de visite refusé",
+      "impact": "Ajouter une visite à un animal renvoie 400 même avec une description : le formulaire « Add Visit » échoue.",
+      "detectable_par": "api et front",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/OwnerRestControllerV1.java",
+          "find": "Visit visit = visitMapper.toVisit(visitFieldsDto);",
+          "replace": "Visit visit = visitMapper.toVisit(visitFieldsDto);\n        visit.setDescription(null);"
+        }
+      ]
+    },
+    {
+      "id": "N04",
+      "type": "saine",
+      "titre": "Ajouter une constante inutilisée aux types d'animaux",
+      "impact": "Aucun : constante privée jamais lue.",
+      "detectable_par": "aucun",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/PetTypeRestControllerV1.java",
+          "find": "public class PetTypeRestControllerV1 implements PettypesApi {",
+          "replace": "public class PetTypeRestControllerV1 implements PettypesApi {\n\n    private static final int TYPES_MAX = 20;"
+        }
+      ]
+    },
+    {
+      "id": "N05",
+      "type": "saine",
+      "titre": "Ajouter une constante inutilisée aux spécialités",
+      "impact": "Aucun : constante privée jamais lue.",
+      "detectable_par": "aucun",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/SpecialtyRestControllerV1.java",
+          "find": "public class SpecialtyRestControllerV1 implements SpecialtiesApi {",
+          "replace": "public class SpecialtyRestControllerV1 implements SpecialtiesApi {\n\n    private static final int SPECIALTIES_MAX = 20;"
+        }
+      ]
+    }
+  ]
+}

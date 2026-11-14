@@ -1,0 +1,245 @@
+{
+  "corpus": "mutations-holdout.json",
+  "date": "2026-11-14T12:32:41.121Z",
+  "mode": "real",
+  "modele": "claude-haiku-4-5",
+  "regressions_detectees": "0/1",
+  "faux_positifs": "0/0",
+  "duree_moyenne_s": 63,
+  "cout_total_usd": 0.0629,
+  "details": [
+    {
+      "id": "H01",
+      "type": "regression",
+      "impact": "GET vets/{id} répond 404 pour un vétérinaire existant : la page d'édition d'un vétérinaire ne charge pas.",
+      "correct": false,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 34,
+      "journal": [
+        {
+          "outil": "analyser_diff",
+          "entree": {},
+          "erreur": true
+        },
+        {
+          "outil": "lire_diff",
+          "entree": {},
+          "erreur": true
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=OWNERS"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=SEARCH"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=George Franklin"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=OWNERS"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=SEARCH"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Add Owner"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=VETERINARIANS"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=ALL"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "vets"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=PET TYPES"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=SPECIALTIES"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=OWNERS"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=SEARCH"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Add Owner"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#firstName",
+            "texte": "Test"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#lastName",
+            "texte": "User"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#address",
+            "texte": "123 Test St"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#city",
+            "texte": "TestCity"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#telephone",
+            "texte": "6085551234"
+          },
+          "erreur": false
+        }
+      ],
+      "dureeS": 63,
+      "coutUsd": 0.0629
+    }
+  ]
+}

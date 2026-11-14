@@ -1,0 +1,1288 @@
+{
+  "corpus": "mutations-fresh.json",
+  "date": "2026-11-14T15:37:42.821Z",
+  "mode": "real",
+  "modele": "claude-haiku-4-5",
+  "regressions_detectees": "0/3",
+  "faux_positifs": "1/2",
+  "duree_moyenne_s": 63,
+  "cout_total_usd": 0.3678,
+  "details": [
+    {
+      "id": "N01",
+      "type": "regression",
+      "impact": "Un propriétaire créé n'a pas de ville : la ville saisie dans « Add Owner » n'est jamais enregistrée.",
+      "correct": false,
+      "confirmees": [
+        "L'ajout d'un propriétaire échoue avec erreur 500 car la ville est forcément mise à null"
+      ],
+      "rejetees": [],
+      "arret": "termine",
+      "actions": 30,
+      "journal": [
+        {
+          "outil": "analyser_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "lire_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Add Owner"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#firstName",
+            "texte": "TestOwner"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#lastName",
+            "texte": "TestLast"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#address",
+            "texte": "123 Test St"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#city",
+            "texte": "TestCity"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#telephone",
+            "texte": "1234567890"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Add Owner"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "owners",
+            "corps": {
+              "firstName": "APITestOwner",
+              "lastName": "APITest",
+              "address": "456 API St",
+              "city": "APITestCity",
+              "telephone": "9876543210"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "signaler_regression",
+          "entree": {
+            "titre": "L'ajout d'un propriétaire échoue avec erreur 500 car la ville est forcément mise à null",
+            "ecran_ou_endpoint": "POST /petclinic/api/owners et http://localhost:4300/petclinic/owners/add",
+            "attendu": "L'ajout d'un propriétaire avec une ville saisie doit succéder et enregistrer la ville dans la base de données",
+            "observe": "Le formulaire affiche \"server returned code 500 with body \"[object Object]\"\", et l'appel API POST owners retourne HTTP 500 avec ConstraintViolationException. Cause : le code défini owner.setCity(null) après le mappage, ce qui viole les contraintes de base de données",
+            "etapes": [
+              "1. Aller à http://localhost:4300/petclinic/owners/add",
+              "2. Remplir le formulaire : FirstName=TestOwner, LastName=TestLast, Address=123 Test St, City=TestCity, Telephone=1234567890",
+              "3. Cliquer sur 'Add Owner'",
+              "4. Ou appeler POST /petclinic/api/owners avec firstName, lastName, address, city, telephone"
+            ],
+            "gravite": "bloquante"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners?lastName=Davis"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners/1/edit"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#city",
+            "texte": "NewMadison"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Update Owner"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners/1/edit"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#city",
+            "texte": "Madison"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Update Owner"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "terminer",
+          "entree": {
+            "resume": "La PR introduit UNE RÉGRESSION BLOQUANTE : la méthode POST /owners échoue avec erreur 500 (ConstraintViolationException) car le code défini forcément owner.setCity(null) après le mappage des données. Cela rend l'ajout de propriétaires impossible. Les autres opérations (GET, PUT) fonctionnent normalement."
+          },
+          "erreur": false
+        }
+      ],
+      "dureeS": 64,
+      "coutUsd": 0.0739
+    },
+    {
+      "id": "N02",
+      "type": "regression",
+      "impact": "Un vétérinaire créé n'a aucune spécialité, même si elles sont cochées dans « Add Vet ».",
+      "correct": false,
+      "confirmees": [
+        "Les spécialités d'un vétérinaire ne sont pas sauvegardées lors de sa création"
+      ],
+      "rejetees": [],
+      "arret": "termine",
+      "actions": 22,
+      "journal": [
+        {
+          "outil": "analyser_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "lire_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "vets"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "vets/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "vets",
+            "corps": {
+              "firstName": "TestVet",
+              "lastName": "Creation",
+              "specialties": [
+                {
+                  "id": 1,
+                  "name": "radiology"
+                }
+              ]
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/vets"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Add Vet"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#firstName",
+            "texte": "TestNewVet"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#lastName",
+            "texte": "WithSpecialty"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "choisir",
+          "entree": {
+            "selecteur": "#specialties",
+            "option": "dentistry"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Save Vet"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "vets/8"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "signaler_regression",
+          "entree": {
+            "titre": "Les spécialités d'un vétérinaire ne sont pas sauvegardées lors de sa création",
+            "ecran_ou_endpoint": "POST /petclinic/api/vets et http://localhost:4300/petclinic/vets/add",
+            "attendu": "Quand on crée un vétérinaire et qu'on sélectionne une spécialité dans le formulaire, celle-ci doit être sauvegardée et visible dans la liste des vétérinaires et dans la réponse API",
+            "observe": "Création d'un vétérinaire \"TestNewVet WithSpecialty\" avec la spécialité \"dentistry\" sélectionnée. La réponse de l'API POST retourne specialties:[] vide. La liste des vétérinaires affiche le vétérinaire créé sans aucune spécialité. GET /petclinic/api/vets/8 confirme specialties:[]",
+            "etapes": [
+              "Aller sur http://localhost:4300/petclinic/vets/add",
+              "Remplir First Name: TestNewVet",
+              "Remplir Last Name: WithSpecialty",
+              "Sélectionner Specialty: dentistry",
+              "Cliquer Save Vet",
+              "Vérifier que la spécialité n'apparaît pas dans la liste"
+            ],
+            "gravite": "bloquante"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Edit VetDelete VetHelen Leary"
+          },
+          "erreur": true
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/vets"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "capture",
+          "entree": {
+            "nom": "vets_list"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "vets/2"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "terminer",
+          "entree": {
+            "resume": "Test de la PR sur VetRestControllerV1 complété. Une régression bloquante a été détectée : lors de la création d'un vétérinaire via POST /petclinic/api/vets avec spécialités, celles-ci ne sont pas sauvegardées. La réponse retourne un tableau specialties vide. Cause : la ligne ajoutée \"vet.setSpecialties(new ArrayList<>());\" réinitialise les spécialités avant le traitement. Impact sur le front : l'écran /vets/add crée des vétérinaires sans leurs spécialités sélectionnées. Les vétérinaires existants avec spécialités ne sont pas affectés (les GET restent fonctionnels)."
+          },
+          "erreur": false
+        }
+      ],
+      "dureeS": 79,
+      "coutUsd": 0.0839
+    },
+    {
+      "id": "N03",
+      "type": "regression",
+      "impact": "Ajouter une visite à un animal renvoie 400 même avec une description : le formulaire « Add Visit » échoue.",
+      "correct": false,
+      "confirmees": [
+        "Ajout de visite échoue avec erreur 500 - description forcée à null"
+      ],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 30,
+      "journal": [
+        {
+          "outil": "analyser_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "lire_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=OWNERS"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=SEARCH"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=George Franklin"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Add Visit"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#date",
+            "texte": "2024-01-15"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#description",
+            "texte": "Vaccin contre la rage et contrôle général"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Add Visit"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "owners/1/pets/1/visits",
+            "corps": {
+              "visitDate": "2024-01-15",
+              "description": "Test de description"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "owners/1/pets/1/visits",
+            "corps": {
+              "date": "2024-01-15",
+              "description": "Test de description visite"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "owners/1/pets/1/visits",
+            "corps": {
+              "date": "2024-01-15"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "visits"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "owners/1/pets/1/visits",
+            "corps": {
+              "date": "2024-01-15",
+              "description": ""
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "signaler_regression",
+          "entree": {
+            "titre": "Ajout de visite échoue avec erreur 500 - description forcée à null",
+            "ecran_ou_endpoint": "POST /petclinic/api/owners/{ownerId}/pets/{petId}/visits et écran http://localhost:4300/petclinic/pets/1/visits/add",
+            "attendu": "L'utilisateur devrait pouvoir ajouter une visite avec une date et une description. La visite devrait être créée et la description enregistrée.",
+            "observe": "L'API retourne HTTP 500 avec ConstraintViolationException. Le formulaire du front affiche \"server returned code 500 with body \"[object Object]\"\". Cause : le contrôleur exécute visit.setDescription(null) après le mapping du DTO, ce qui viole la contrainte de validation (description doit être non-null et de taille 1-255).",
+            "etapes": [
+              "1. Naviguer vers http://localhost:4300/petclinic/owners/1",
+              "2. Cliquer sur 'Add Visit' pour le pet Leo",
+              "3. Remplir Date: 2024-01-15 et Description: 'Test description'",
+              "4. Cliquer 'Add Visit'",
+              "5. Observer l'erreur 500",
+              "6. Ou appeler POST /petclinic/api/owners/1/pets/1/visits avec {\"date\": \"2024-01-15\", \"description\": \"test\"} → HTTP 500"
+            ],
+            "gravite": "bloquante"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners?lastName=Davis"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "owners",
+            "corps": {
+              "firstName": "TestOwner",
+              "lastName": "TestLast",
+              "address": "123 Test St",
+              "city": "TestCity",
+              "telephone": "1234567890"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "PUT",
+            "chemin": "owners/1",
+            "corps": {
+              "firstName": "George",
+              "lastName": "Franklin",
+              "address": "110 W. Liberty St.",
+              "city": "Madison",
+              "telephone": "6085551023"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Add Owner"
+          },
+          "erreur": false
+        }
+      ],
+      "dureeS": 72,
+      "coutUsd": 0.1111
+    },
+    {
+      "id": "N04",
+      "type": "saine",
+      "impact": "Aucun : constante privée jamais lue.",
+      "correct": false,
+      "confirmees": [
+        "API retourne plus de 20 types au lieu de respecter la limite TYPES_MAX"
+      ],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 30,
+      "journal": [
+        {
+          "outil": "analyser_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "lire_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "pettypes"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/pettypes"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners/1/pets/add"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "pettypes/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "pettypes",
+            "corps": {
+              "name": "TestType"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "pettypes"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "pettypes",
+            "corps": {
+              "name": "Type1"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "pettypes",
+            "corps": {
+              "name": "Type2"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "pettypes",
+            "corps": {
+              "name": "Type3"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "pettypes",
+            "corps": {
+              "name": "Type4"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "pettypes",
+            "corps": {
+              "name": "Type5"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "pettypes",
+            "corps": {
+              "name": "Type6"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "pettypes",
+            "corps": {
+              "name": "Type7"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "pettypes",
+            "corps": {
+              "name": "Type8"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "pettypes",
+            "corps": {
+              "name": "Type9"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "pettypes",
+            "corps": {
+              "name": "Type10"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "pettypes",
+            "corps": {
+              "name": "Type11"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "pettypes",
+            "corps": {
+              "name": "Type12"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "pettypes",
+            "corps": {
+              "name": "Type13"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "pettypes",
+            "corps": {
+              "name": "Type14"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "pettypes",
+            "corps": {
+              "name": "Type15"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "pettypes"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/pettypes"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "signaler_regression",
+          "entree": {
+            "titre": "API retourne plus de 20 types au lieu de respecter la limite TYPES_MAX",
+            "ecran_ou_endpoint": "GET /petclinic/api/pettypes",
+            "attendu": "L'API doit retourner un maximum de 20 types de pets (limite définie par la constante TYPES_MAX = 20)",
+            "observe": "L'API retourne 22 types au lieu de 20. La réponse complète affiche : [TestType, Type1, Type10, Type11, Type12, Type13, Type14, Type15, Type2, Type3, Type4, Type5, Type6, Type7, Type8, Type9, bird, cat, dog, hamster, lizard, snake]. La constante TYPES_MAX a été ajoutée mais n'est pas utilisée pour limiter la réponse.",
+            "etapes": [
+              "Créer 15 nouveaux types de pets via POST /petclinic/api/pettypes",
+              "Appeler GET /petclinic/api/pettypes",
+              "Compter le nombre de types retournés (22 au lieu de 20 max attendu)"
+            ],
+            "gravite": "majeure"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners/1/pets/add"
+          },
+          "erreur": false
+        }
+      ],
+      "dureeS": 54,
+      "coutUsd": 0.0579
+    },
+    {
+      "id": "N05",
+      "type": "saine",
+      "impact": "Aucun : constante privée jamais lue.",
+      "correct": true,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 33,
+      "journal": [
+        {
+          "outil": "analyser_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "lire_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "specialties"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/specialties"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "capture",
+          "entree": {
+            "nom": "specialties_page"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/vets"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "capture",
+          "entree": {
+            "nom": "vets_page"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "vets"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/specialties"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "specialties",
+            "corps": {
+              "name": "test_spec_1"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "capture",
+          "entree": {
+            "nom": "specialties_after_add"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "specialties"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "button:has-text(\"SPECIALTIES\")"
+          },
+          "erreur": true
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/specialties"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "specialties",
+            "corps": {
+              "name": "test_spec_2"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "specialties",
+            "corps": {
+              "name": "test_spec_3"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "specialties",
+            "corps": {
+              "name": "test_spec_4"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "specialties",
+            "corps": {
+              "name": "test_spec_5"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "specialties",
+            "corps": {
+              "name": "test_spec_6"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "specialties",
+            "corps": {
+              "name": "test_spec_7"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "specialties",
+            "corps": {
+              "name": "test_spec_8"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "specialties",
+            "corps": {
+              "name": "test_spec_9"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "specialties",
+            "corps": {
+              "name": "test_spec_10"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "specialties",
+            "corps": {
+              "name": "test_spec_11"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "specialties",
+            "corps": {
+              "name": "test_spec_12"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "specialties",
+            "corps": {
+              "name": "test_spec_13"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "specialties",
+            "corps": {
+              "name": "test_spec_14"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "specialties",
+            "corps": {
+              "name": "test_spec_15"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "specialties",
+            "corps": {
+              "name": "test_spec_16"
+            }
+          },
+          "erreur": false
+        }
+      ],
+      "dureeS": 48,
+      "coutUsd": 0.041
+    }
+  ]
+}

@@ -37,7 +37,7 @@ try {
       correct: scoreLine(m.id, m.type, result.confirmees.map((c) => c.rapport.titre)),
       confirmees: result.confirmees.map((c) => c.rapport.titre),
       rejetees: result.rejetees.map((c) => c.rapport.titre),
-      arret: result.arret, actions: result.actions,
+      arret: result.arret, actions: result.actions, journal: result.journal,
       dureeS: Math.round(result.dureeMs / 1000), coutUsd: Number(result.coutUsd.toFixed(4))
     };
     lignes.push(ligne);

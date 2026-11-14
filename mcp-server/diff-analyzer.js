@@ -90,8 +90,26 @@ export function domainsForFile({ file, changes }) {
     const domains = openapiDomains(changes);
     return domains.size ? { domains: [...domains], raison: 'contrat OpenAPI' } : { domains: ALL, raison: 'contrat OpenAPI (zone inconnue)' };
   }
-  const domain = domainFromName(file.split('/').pop());
-  return domain ? { domains: [domain], raison: 'code' } : { domains: ALL, raison: 'fichier non reconnu' };
+  // Un contrôleur porte souvent plusieurs domaines : on lit le nom de la méthode modifiée, pas seulement celui du fichier.
+  const fileDomain = domainFromName(file.split('/').pop());
+  const fromChanges = changes.flatMap((c) => {
+    const method = enclosingMethod(c.before);
+    return allDomains(method ?? c.line);
+  });
+  const domains = [...new Set([fileDomain, ...fromChanges].filter(Boolean))];
+  return domains.length ? { domains, raison: 'code' } : { domains: ALL, raison: 'fichier non reconnu' };
+}
+
+function allDomains(text) {
+  return NAME_RULES.filter(([pattern]) => pattern.test(text)).map(([, domain]) => domain);
+}
+
+function enclosingMethod(before) {
+  for (const line of [...before].reverse()) {
+    const match = line.match(/\b(?:public|private|protected)\b[^(]*?\b(\w+)\s*\(/);
+    if (match) return match[1];
+  }
+  return null;
 }
 
 export function analyzeDiff(diffText) {

@@ -1,0 +1,84 @@
+{
+  "corpus": "mutations-holdout.json",
+  "date": "2026-11-14T12:18:11.339Z",
+  "mode": "real",
+  "modele": "claude-haiku-4-5",
+  "regressions_detectees": "0/4",
+  "faux_positifs": "0/2",
+  "duree_moyenne_s": 60,
+  "cout_total_usd": 0.3244,
+  "details": [
+    {
+      "id": "H01",
+      "type": "regression",
+      "impact": "GET vets/{id} répond 404 pour un vétérinaire existant : la page d'édition d'un vétérinaire ne charge pas.",
+      "correct": false,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 30,
+      "dureeS": 47,
+      "coutUsd": 0.0573
+    },
+    {
+      "id": "H02",
+      "type": "regression",
+      "impact": "Un animal ajouté à un propriétaire n'est pas rattaché à lui : il n'apparaît pas sur la fiche propriétaire.",
+      "correct": false,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 31,
+      "dureeS": 61,
+      "coutUsd": 0.0491
+    },
+    {
+      "id": "H05",
+      "type": "regression",
+      "impact": "PUT owners/{id} n'enregistre plus le nom de famille : modifier le nom dans « Edit Owner » est sans effet.",
+      "correct": false,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 31,
+      "dureeS": 63,
+      "coutUsd": 0.0648
+    },
+    {
+      "id": "H06",
+      "type": "regression",
+      "impact": "PUT owners/{id}/pets/{petId} n'enregistre plus le nom de l'animal : le renommage est sans effet.",
+      "correct": false,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 33,
+      "dureeS": 63,
+      "coutUsd": 0.0497
+    },
+    {
+      "id": "H03",
+      "type": "saine",
+      "impact": "Aucun : renommage d'une variable locale.",
+      "correct": true,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 30,
+      "dureeS": 62,
+      "coutUsd": 0.0495
+    },
+    {
+      "id": "H04",
+      "type": "saine",
+      "impact": "Aucun : constante privée jamais lue.",
+      "correct": true,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 30,
+      "dureeS": 63,
+      "coutUsd": 0.054
+    }
+  ]
+}

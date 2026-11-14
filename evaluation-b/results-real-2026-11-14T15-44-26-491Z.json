@@ -1,0 +1,1012 @@
+{
+  "corpus": "mutations-clean.json",
+  "date": "2026-11-14T15:44:26.491Z",
+  "mode": "real",
+  "modele": "claude-haiku-4-5",
+  "regressions_detectees": "0/3",
+  "faux_positifs": "0/2",
+  "duree_moyenne_s": 65,
+  "cout_total_usd": 0.3473,
+  "details": [
+    {
+      "id": "F01",
+      "type": "regression",
+      "impact": "PUT pets/{id} n'enregistre plus la date de naissance : la modification est sans effet.",
+      "correct": false,
+      "confirmees": [
+        "La date de naissance d'un animal ne peut plus être modifiée lors de sa mise à jour"
+      ],
+      "rejetees": [],
+      "arret": "termine",
+      "actions": 23,
+      "journal": [
+        {
+          "outil": "analyser_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "lire_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Edit Pet"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#birthDate",
+            "texte": "2012/05/15"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Update Pet"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "pets/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Add New Pet"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=ADD NEW"
+          },
+          "erreur": true
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners/1/pets/add"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#name",
+            "texte": "TestDog"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#birthDate",
+            "texte": "2015/03/20"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "choisir",
+          "entree": {
+            "selecteur": "#typeId",
+            "option": "dog"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Save Pet"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "signaler_regression",
+          "entree": {
+            "titre": "La date de naissance d'un animal ne peut plus être modifiée lors de sa mise à jour",
+            "ecran_ou_endpoint": "PUT /petclinic/api/pets/1 et http://localhost:4300/petclinic/pets/1/edit",
+            "attendu": "Quand on édite un animal et qu'on change sa date de naissance, la nouvelle date doit être enregistrée en base de données et réaffichée sur l'écran.",
+            "observe": "Après avoir changé la date de naissance de Leo de 2010-09-07 à 2012-05-15 et cliqué sur \"Update Pet\", l'écran revient à la page du propriétaire mais la date reste 2010-09-07 (confirmé par l'API : GET /petclinic/api/pets/1 retourne \"birthDate\":\"2010-09-07\").",
+            "etapes": [
+              "1. Aller à http://localhost:4300/petclinic/owners/1",
+              "2. Cliquer sur 'Edit Pet' pour l'animal Leo",
+              "3. Changer la date de naissance (par ex. de 2010-09-07 à 2012-05-15)",
+              "4. Cliquer sur 'Update Pet'",
+              "5. Vérifier la date affichée ou via GET /petclinic/api/pets/1"
+            ],
+            "gravite": "majeure"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "terminer",
+          "entree": {
+            "resume": "La PR supprime la mise à jour de la date de naissance dans la méthode PUT du contrôleur des animaux (PetRestControllerV1). Régression confirmée : impossible de modifier la date de naissance d'un animal existant via le formulaire d'édition. La création d'animaux fonctionne correctement. Les autres champs (nom, type) restent modifiables."
+          },
+          "erreur": false
+        }
+      ],
+      "dureeS": 62,
+      "coutUsd": 0.0646
+    },
+    {
+      "id": "F02",
+      "type": "regression",
+      "impact": "PUT visits/{id} n'enregistre plus la date de la visite : la modification est sans effet.",
+      "correct": false,
+      "confirmees": [
+        "Mise à jour de visite : la date n'est pas modifiée"
+      ],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 30,
+      "journal": [
+        {
+          "outil": "analyser_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "lire_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=OWNERS"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Add Visit"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#date",
+            "texte": "2024-01-15"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#description",
+            "texte": "Test visit - checkup"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Add Visit"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Edit Visit"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#date",
+            "texte": "2024-02-20"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#description",
+            "texte": "Updated description - Follow-up"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Update Visit"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "visits"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "signaler_regression",
+          "entree": {
+            "titre": "Mise à jour de visite : la date n'est pas modifiée",
+            "ecran_ou_endpoint": "http://localhost:4300/petclinic/visits/5/edit et POST /petclinic/api/owners/{id}/pets/{petId}/visits",
+            "attendu": "Lors de la modification d'une visite, la date et la description doivent être mises à jour. L'utilisateur saisit une nouvelle date (2024-02-20) et clique sur \"Update Visit\", la date devrait devenir 2024-02-20.",
+            "observe": "Après modification, la date reste 2024-01-15 (l'originale) alors que la description a bien été mise à jour à \"Updated description - Follow-up\". L'API retourne : {\"date\":\"2024-01-15\",\"description\":\"Updated description - Follow-up\",\"id\":5,\"petId\":1}. La date n'a pas été mise à jour sur le serveur.",
+            "etapes": [
+              "1. Créer une visite avec date 2024-01-15 et description 'Test visit - checkup' pour Leo (pet 1)",
+              "2. Aller à http://localhost:4300/petclinic/visits/5/edit",
+              "3. Changer la date à 2024-02-20 et la description à 'Updated description - Follow-up'",
+              "4. Cliquer sur 'Update Visit'",
+              "5. Vérifier la visite sur la page du propriétaire : la date affiche 2024-01-15 au lieu de 2024-02-20",
+              "6. Vérifier l'API GET /petclinic/api/visits : date reste 2024-01-15"
+            ],
+            "gravite": "majeure"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "POST",
+            "chemin": "owners/2/pets/3/visits",
+            "corps": {
+              "date": "2024-03-10",
+              "description": "API test visit"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "PUT",
+            "chemin": "owners/2/pets/3/visits/6",
+            "corps": {
+              "date": "2024-03-15",
+              "description": "Updated via API"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "PUT",
+            "chemin": "visits/6",
+            "corps": {
+              "date": "2024-03-15",
+              "description": "Updated via API"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "visits"
+          },
+          "erreur": false
+        }
+      ],
+      "dureeS": 69,
+      "coutUsd": 0.0905
+    },
+    {
+      "id": "F03",
+      "type": "regression",
+      "impact": "PUT specialties/{id} n'enregistre plus le nom : renommer une spécialité dans le front est sans effet.",
+      "correct": false,
+      "confirmees": [
+        "Modification du nom d'une spécialité non enregistrée"
+      ],
+      "rejetees": [],
+      "arret": "termine",
+      "actions": 20,
+      "journal": [
+        {
+          "outil": "analyser_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "lire_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "specialties"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "PUT",
+            "chemin": "specialties/1",
+            "corps": {
+              "id": 1,
+              "name": "cardiology"
+            }
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "specialties/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/specialties"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "capture",
+          "entree": {
+            "nom": "specialties_initial"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "button:has-text(\"Edit\")"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "input#name",
+            "texte": "orthodontics"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "capture",
+          "entree": {
+            "nom": "specialty_edit_form"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "button:has-text(\"Update\")"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "specialties/3"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "capture",
+          "entree": {
+            "nom": "specialties_after_update"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/vets"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "signaler_regression",
+          "entree": {
+            "titre": "Modification du nom d'une spécialité non enregistrée",
+            "ecran_ou_endpoint": "PUT /petclinic/api/specialties/{id} et http://localhost:4300/petclinic/specialties",
+            "attendu": "Quand l'utilisateur édite une spécialité et change son nom, puis clique \"Update\", le nouveau nom doit être enregistré en base de données et affiché dans la liste des spécialités.",
+            "observe": "Après modification du nom d'une spécialité (exemple : dentistry → orthodontics) et clic sur \"Update\", la page redirige vers la liste mais la spécialité conserve son ancien nom \"dentistry\". L'API retourne toujours {\"id\":3,\"name\":\"dentistry\"} au lieu de {\"id\":3,\"name\":\"orthodontics\"}. Vérification par GET /petclinic/api/specialties/3 confirme que le changement n'est pas enregistré.",
+            "etapes": [
+              "1. Ouvrir http://localhost:4300/petclinic/specialties",
+              "2. Cliquer sur 'Edit' pour la spécialité 'dentistry' (ID 3)",
+              "3. Dans le formulaire, remplacer 'dentistry' par 'orthodontics'",
+              "4. Cliquer sur 'Update'",
+              "5. Vérifier la liste des spécialités : affiche toujours 'dentistry'",
+              "6. Vérifier via API GET /petclinic/api/specialties/3 : retourne toujours 'dentistry'"
+            ],
+            "gravite": "majeure"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "terminer",
+          "entree": {
+            "resume": "**Analyse de la PR terminée.**\n\n**Changement appliqué :** Suppression de la ligne `currentSpecialty.setName(specialtyDto.getName());` dans SpecialtyRestControllerV1.java (méthode PUT pour mettre à jour une spécialité).\n\n**Régression détectée (majeure) :** La modification du nom d'une spécialité n'est plus enregistrée. \n- Testée via API : PUT /petclinic/api/specialties/1 avec nouveau nom ne change rien\n- Testée via front : Édition d'une spécialité, changement du nom et clic \"Update\" n'enregistre pas le changement\n- Écrans impactés : http://localhost:4300/petclinic/specialties et http://localhost:4300/petclinic/vets (affichage des spécialités)\n\nL'API retourne 204 (succès) mais ne sauvegarde pas le nom modifié en base de données, ce qui trompe l'utilisateur sur la réussite de l'opération."
+          },
+          "erreur": false
+        }
+      ],
+      "dureeS": 66,
+      "coutUsd": 0.0931
+    },
+    {
+      "id": "F04",
+      "type": "saine",
+      "impact": "Aucun : constante privée jamais lue.",
+      "correct": true,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 30,
+      "journal": [
+        {
+          "outil": "lire_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "analyser_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "pets"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "vets"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#lastName",
+            "texte": "Davis"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "button:has-text(\"Find Owner\")"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "button:has-text(\"Edit Owner\")"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "button:has-text(\"Back\")"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "button:has-text(\"Edit Pet\")"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "button:has-text(\"Back\")"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "button:has-text(\"Add Visit\")"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#date",
+            "texte": "01/15/2024"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#description",
+            "texte": "Test checkup"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "button:has-text(\"Add Visit\")"
+          },
+          "erreur": true
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/vets"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "button:has-text(\"Add Vet\")"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/pettypes"
+          },
+          "erreur": false
+        }
+      ],
+      "dureeS": 48,
+      "coutUsd": 0.0445
+    },
+    {
+      "id": "F05",
+      "type": "saine",
+      "impact": "Aucun : constante privée jamais lue.",
+      "correct": true,
+      "confirmees": [],
+      "rejetees": [],
+      "arret": "limite_actions",
+      "actions": 30,
+      "journal": [
+        {
+          "outil": "analyser_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "lire_diff",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "visits"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners/1/pets/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Add Visit"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#date",
+            "texte": "2025-01-15"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "remplir",
+          "entree": {
+            "selecteur": "#description",
+            "texte": "Test visit"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "button:has-text(\"Add Visit\")"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "visits"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners/1/pets/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "owners/1/pets/1/visits"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "visits/1"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Betty Davis"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Eduardo Rodriquez"
+          },
+          "erreur": true
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "cliquer",
+          "entree": {
+            "selecteur": "text=Peter McTavish"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "lire_page",
+          "entree": {},
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "pets/7"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "appeler_api",
+          "entree": {
+            "methode": "GET",
+            "chemin": "pets/8"
+          },
+          "erreur": false
+        },
+        {
+          "outil": "ouvrir",
+          "entree": {
+            "url": "http://localhost:4300/petclinic/owners/6"
+          },
+          "erreur": false
+        }
+      ],
+      "dureeS": 78,
+      "coutUsd": 0.0546
+    }
+  ]
+}

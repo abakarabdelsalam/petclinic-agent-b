@@ -23,8 +23,22 @@ test('parseDiff ignore les en-têtes --- et +++', () => {
 
 test('un fichier Java est rattaché à son domaine', () => {
   const result = analyzeDiff(diff('src/main/java/x/mapper/VetMapper.java', '+    @Mapping(target = "specialties", ignore = true)'));
-  assert.deepEqual(result.domaines, ['vets']);
+  assert.deepEqual(result.domaines, ['vets', 'specialties']);
   assert.ok(result.ecrans.some((e) => e.endsWith('/vets')));
+});
+
+test('dans un contrôleur multi-domaines, la méthode modifiée désigne le domaine', () => {
+  const body = ' public ResponseEntity<PetDto> addPetToOwner(Integer ownerId, PetFieldsDto petFieldsDto) {\n     Pet pet = new Pet();\n-        owner.setId(ownerId);';
+  const result = analyzeDiff(diff('src/main/java/x/rest/controller/v1/OwnerRestControllerV1.java', body));
+  assert.ok(result.domaines.includes('pets'));
+  assert.ok(result.domaines.includes('owners'));
+});
+
+test('une modif d\'animal dans le contrôleur des propriétaires couvre les animaux', () => {
+  const body = ' public ResponseEntity<Void> updateOwnersPet(Integer ownerId, Integer petId, PetFieldsDto petFieldsDto) {\n     if (currentPet != null) {\n-                currentPet.setName(petFieldsDto.getName());';
+  const result = analyzeDiff(diff('src/main/java/x/rest/controller/v1/OwnerRestControllerV1.java', body));
+  assert.ok(result.domaines.includes('pets'));
+  assert.ok(result.ecrans.some((e) => e.endsWith('/pets/1/edit')));
 });
 
 test('une modif d\'openapi.yml est rattachée au chemin qui la précède', () => {

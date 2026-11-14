@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+import { StdioClientTransport, getDefaultEnvironment } from '@modelcontextprotocol/sdk/client/stdio.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const MCP_SERVER = path.join(here, '..', 'mcp-server', 'server.js');
@@ -10,7 +10,9 @@ export const MCP_SERVER = path.join(here, '..', 'mcp-server', 'server.js');
 export class McpTools {
   static async connect(serverPath = MCP_SERVER) {
     const client = new Client({ name: 'agent-non-regression', version: '1.0.0' });
-    await client.connect(new StdioClientTransport({ command: 'node', args: [serverPath], stderr: 'ignore' }));
+    // Le SDK ne transmet pas les variables inconnues : PETCLINIC_REPO doit être passé explicitement.
+    const env = { ...getDefaultEnvironment(), ...(process.env.PETCLINIC_REPO ? { PETCLINIC_REPO: process.env.PETCLINIC_REPO } : {}) };
+    await client.connect(new StdioClientTransport({ command: 'node', args: [serverPath], env, stderr: 'ignore' }));
     const { tools } = await client.listTools();
     return new McpTools(client, tools);
   }

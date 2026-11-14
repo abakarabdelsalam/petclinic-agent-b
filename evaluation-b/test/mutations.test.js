@@ -3,7 +3,10 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { applyEdit } from '../apply-edits.js';
+import { existsSync } from 'node:fs';
 import { loadMutations, DEFAULT_REPO } from '../mutate.js';
+
+const needsPetclinic = existsSync(DEFAULT_REPO) ? {} : { skip: 'PETCLINIC_REPO absent' };
 
 test('applyEdit remplace une occurrence unique', () => {
   assert.equal(applyEdit('a\nb\nc', { find: 'b\n', replace: 'B\n' }), 'a\nB\nc');
@@ -29,7 +32,7 @@ test('le corpus contient 10 régressions et 5 PR saines aux id uniques', async (
   assert.equal(new Set(mutations.map((m) => m.id)).size, 15);
 });
 
-test('le corpus de contrôle s\'applique aussi, avec 4 régressions et 2 PR saines', async () => {
+test('le corpus de contrôle s\'applique aussi, avec 4 régressions et 2 PR saines', needsPetclinic, async () => {
   const mutations = await loadMutations('mutations-holdout.json');
   assert.equal(mutations.filter((m) => m.type === 'regression').length, 4);
   assert.equal(mutations.filter((m) => m.type === 'saine').length, 2);
@@ -43,7 +46,7 @@ test('le corpus de contrôle s\'applique aussi, avec 4 régressions et 2 PR sain
   }
 });
 
-test('chaque edit s\'applique sur les sources de petclinic-rest', async () => {
+test('chaque edit s\'applique sur les sources de petclinic-rest', needsPetclinic, async () => {
   for (const m of await loadMutations()) {
     const contents = new Map();
     for (const edit of m.edits) {

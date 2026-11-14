@@ -1,0 +1,76 @@
+{
+  "_avertissement": "Corpus vierge : jamais lancé, jamais utilisé pour régler quoi que ce soit avant ce run.",
+  "base": "a4cb2c8",
+  "mutations": [
+    {
+      "id": "F01",
+      "type": "regression",
+      "titre": "Date de naissance d'animal non enregistrée",
+      "impact": "PUT pets/{id} n'enregistre plus la date de naissance : la modification est sans effet.",
+      "detectable_par": "api",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/PetRestControllerV1.java",
+          "find": "currentPet.setBirthDate(petDto.getBirthDate());",
+          "replace": ""
+        }
+      ]
+    },
+    {
+      "id": "F02",
+      "type": "regression",
+      "titre": "Date de visite non enregistrée",
+      "impact": "PUT visits/{id} n'enregistre plus la date de la visite : la modification est sans effet.",
+      "detectable_par": "api",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/VisitRestControllerV1.java",
+          "find": "currentVisit.setDate(visitDto.getDate());",
+          "replace": ""
+        }
+      ]
+    },
+    {
+      "id": "F03",
+      "type": "regression",
+      "titre": "Nom de spécialité non enregistré à la modification",
+      "impact": "PUT specialties/{id} n'enregistre plus le nom : renommer une spécialité dans le front est sans effet.",
+      "detectable_par": "api et front",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/SpecialtyRestControllerV1.java",
+          "find": "currentSpecialty.setName(specialtyDto.getName());",
+          "replace": ""
+        }
+      ]
+    },
+    {
+      "id": "F04",
+      "type": "saine",
+      "titre": "Constante inutilisée dans le contrôleur des utilisateurs",
+      "impact": "Aucun : constante privée jamais lue.",
+      "detectable_par": "aucun",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/UserRestControllerV1.java",
+          "find": "public class UserRestControllerV1 implements UsersApi {",
+          "replace": "public class UserRestControllerV1 implements UsersApi {\n\n    private static final int ROLES_MAX = 5;"
+        }
+      ]
+    },
+    {
+      "id": "F05",
+      "type": "saine",
+      "titre": "Constante inutilisée dans le contrôleur des visites",
+      "impact": "Aucun : constante privée jamais lue.",
+      "detectable_par": "aucun",
+      "edits": [
+        {
+          "file": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/VisitRestControllerV1.java",
+          "find": "public class VisitRestControllerV1 implements VisitsApi {",
+          "replace": "public class VisitRestControllerV1 implements VisitsApi {\n\n    private static final int VISITS_MAX = 100;"
+        }
+      ]
+    }
+  ]
+}
