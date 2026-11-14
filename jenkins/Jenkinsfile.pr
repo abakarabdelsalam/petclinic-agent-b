@@ -1,0 +1,88 @@
+// Pipeline de non-régression : applique une PR simulée sur PetClinic, lance l'agent, archive son rapport.
+pipeline {
+  agent any
+
+  parameters {
+    string(name: 'MUTATION', defaultValue: 'F03', description: 'PR simulée à tester (identifiant dans le corpus)')
+    choice(name: 'CORPUS', choices: ['mutations-clean.json', 'mutations-fresh.json', 'mutations-holdout.json', 'mutations.json'])
+    choice(name: 'CLAUDE_MODE', choices: ['fake', 'real'], description: 'real appelle Claude et coûte de l\'argent')
+  }
+
+  environment {
+    PLAYWRIGHT_BROWSERS_PATH = '/ms-playwright'
+    PETCLINIC_REPO = "${WORKSPACE}/petclinic-rest"
+    PETCLINIC_RUN_CMD = './mvnw -q spring-boot:run'
+    NG_CLI_ANALYTICS = 'false'
+  }
+
+  options { timeout(time: 40, unit: 'MINUTES') }
+
+  stages {
+    stage('Récupérer') {
+      steps {
+        sh '''
+          rm -rf src && git clone --depth 1 file:///repo src
+          [ -d petclinic-rest ] || git clone https://github.com/spring-petclinic/spring-petclinic-rest.git petclinic-rest
+          git -C petclinic-rest checkout -q -f a4cb2c8
+          [ -d petclinic-angular ] || git clone https://github.com/spring-petclinic/spring-petclinic-angular.git petclinic-angular
+          git -C petclinic-angular checkout -q -f 306b4df
+        '''
+      }
+    }
+
+    stage('Installer') {
+      steps {
+        sh '''
+          (cd src/mcp-server && npm ci --no-audit --no-fund)
+          (cd src/agent-b && npm ci --no-audit --no-fund)
+          cd petclinic-angular && { [ -d node_modules ] || npm ci --no-audit --no-fund; } && cd ..
+          (cd petclinic-rest && ./mvnw -q -DskipTests compile)
+        '''
+      }
+    }
+
+    stage('Lancer le front') {
+      steps {
+        // dontKillMe : sinon Jenkins tue ng serve à la fin de cette étape, avant que l'agent ne s'en serve.
+        sh '''
+          cd petclinic-angular
+          JENKINS_NODE_COOKIE=dontKillMe nohup npx ng serve --port 4300 > ../front.log 2>&1 &
+          for i in $(seq 1 120); do curl -sf http://localhost:4300 > /dev/null && exit 0; sleep 2; done
+          echo "Le front n'a pas démarré"; exit 1
+        '''
+      }
+    }
+
+    stage('Appliquer la PR') {
+      steps {
+        dir('src/evaluation-b') {
+          sh 'node mutate.js reset && node mutate.js apply "$MUTATION" && git -C "$PETCLINIC_REPO" diff --stat'
+        }
+      }
+    }
+
+    stage('Tester la PR') {
+      steps {
+        script {
+          def runAgent = { sh(returnStatus: true, script: 'cd src/agent-b && node run-pr.js') }
+          def code
+          if (params.CLAUDE_MODE == 'real') {
+            withCredentials([string(credentialsId: 'anthropic-api-key', variable: 'ANTHROPIC_API_KEY')]) { code = runAgent() }
+          } else {
+            code = runAgent()
+          }
+          // 0 = aucune régression, 1 = régression confirmée, 2 = panne de l'agent.
+          if (code == 1) { unstable('Régression confirmée par l\'agent') }
+          else if (code != 0) { error('L\'agent a échoué') }
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      archiveArtifacts artifacts: 'src/agent-b/resultats/*, front.log', allowEmptyArchive: true
+      sh 'fuser -k 4300/tcp 9966/tcp || true'
+    }
+  }
+}
