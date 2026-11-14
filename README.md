@@ -61,4 +61,16 @@ Le corpus de réglage a servi à ajuster les prompts : son score est optimiste. 
 
 ## Jenkins
 
-`agent-b/Jenkinsfile` est écrit mais n'a pas été exécuté sur une vraie instance Jenkins.
+Jenkins tourne dans Docker avec une image qui ajoute Node, Chromium et `fuser` (`jenkins/Dockerfile`). Le dépôt est monté en lecture seule sur `/repo`.
+
+```powershell
+cd jenkins; docker build -t jenkins-node .
+docker run -d --name jenkins -p 8080:8080 -v jenkins_home:/var/jenkins_home -v D:/Projets/petclinic-agent-b:/repo:ro jenkins-node
+```
+
+| Pipeline | Rôle | Résultat |
+|----------|------|----------|
+| `jenkins/Jenkinsfile.ci` | Tests unitaires des trois modules | Vert |
+| `jenkins/Jenkinsfile.pr` | Applique une PR simulée, lance PetClinic et l'agent, archive le rapport | F03 en mode réel : régression confirmée, build instable, 0,061 $ |
+
+Le mode réel lit la clé dans l'identifiant Jenkins `anthropic-api-key`. La publication du commentaire sur une vraie PR GitHub n'est pas branchée.
