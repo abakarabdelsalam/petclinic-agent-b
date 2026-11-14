@@ -1,0 +1,28 @@
+// Intégration continue : les tests unitaires des trois modules, sans PetClinic ni appel payant.
+pipeline {
+  agent any
+
+  environment {
+    PLAYWRIGHT_BROWSERS_PATH = '/ms-playwright'
+  }
+
+  options { timeout(time: 20, unit: 'MINUTES') }
+
+  stages {
+    stage('Récupérer') {
+      steps {
+        // Le dépôt est monté en lecture seule sur /repo : on clone le dernier commit.
+        sh 'rm -rf src && git -c safe.directory="*" clone --depth 1 file:///repo src'
+      }
+    }
+    stage('Serveur MCP') {
+      steps { dir('src/mcp-server') { sh 'npm ci --no-audit --no-fund && npm test' } }
+    }
+    stage('Agent') {
+      steps { dir('src/agent-b') { sh 'npm ci --no-audit --no-fund && npm test' } }
+    }
+    stage('Évaluation') {
+      steps { dir('src/evaluation-b') { sh 'npm test' } }
+    }
+  }
+}

@@ -6,13 +6,19 @@ import { StdioClientTransport, getDefaultEnvironment } from '@modelcontextprotoc
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const MCP_SERVER = path.join(here, '..', 'mcp-server', 'server.js');
 
+// Le SDK ne transmet au serveur qu'un environnement minimal : ces variables doivent être passées explicitement.
+export const FORWARDED_ENV = ['PETCLINIC_REPO', 'DIFF_BASE', 'PLAYWRIGHT_BROWSERS_PATH'];
+
+export function serverEnv(source = process.env) {
+  const forwarded = Object.fromEntries(FORWARDED_ENV.filter((name) => source[name]).map((name) => [name, source[name]]));
+  return { ...getDefaultEnvironment(), ...forwarded };
+}
+
 // Pont entre le serveur MCP et l'API Claude : mêmes outils, format Anthropic.
 export class McpTools {
   static async connect(serverPath = MCP_SERVER) {
     const client = new Client({ name: 'agent-non-regression', version: '1.0.0' });
-    // Le SDK ne transmet pas les variables inconnues : PETCLINIC_REPO doit être passé explicitement.
-    const env = { ...getDefaultEnvironment(), ...(process.env.PETCLINIC_REPO ? { PETCLINIC_REPO: process.env.PETCLINIC_REPO } : {}) };
-    await client.connect(new StdioClientTransport({ command: 'node', args: [serverPath], env, stderr: 'ignore' }));
+    await client.connect(new StdioClientTransport({ command: 'node', args: [serverPath], env: serverEnv(), stderr: 'ignore' }));
     const { tools } = await client.listTools();
     return new McpTools(client, tools);
   }
