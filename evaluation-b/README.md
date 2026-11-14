@@ -28,24 +28,25 @@ Chaque remplacement doit trouver son texte **exactement une fois**, sinon il éc
 
 R07 ne se voit que dans le navigateur, ce qui justifie Playwright en plus des appels HTTP. S05 est un piège à faux positif : 7 vétérinaires au lieu de 6, c'est voulu.
 
-## Corpus neuf (non mesuré)
+## Corpus et mesures
 
-`mutations-fresh.json` : 3 régressions (N01 ville, N02 spécialités, N03 visite refusée) et 2 PR saines. Préparé sans être lancé, à utiliser une seule fois :
-
-```powershell
-$env:CORPUS = "mutations-fresh.json"
-node evaluate.js
-```
+Les corpus de PR sont dans `evaluation-b/` : `mutations.json` (réglage), `mutations-holdout.json` (contrôle), `mutations-fresh.json` (N01 à N05), `mutations-clean.json` (F01 à F05).
 
 ## Résultats mesurés (mode réel, Haiku 4.5)
 
 | Corpus | Régressions | Fausses alertes | Coût | Remarque |
 |--------|-------------|-----------------|------|----------|
-| Réglage, run 1 (`mutations.json`) | 6/10 | 0/5 | 0,92 $ | Avant ajustement des prompts |
-| Réglage, run 2 (`mutations.json`) | 7/10 | 0/5 | 0,92 $ | Prompts ajustés sur ce corpus : score optimiste |
-| Contrôle (`mutations-holdout.json`) | 2/4 | 0/2 | 0,32 $ | Jamais utilisé pour régler : le chiffre honnête |
+| Réglage, run 1 | 6/10 | 0/5 | 0,92 $ | Avant ajustement des prompts |
+| Réglage, run 2 | 7/10 | 0/5 | 0,92 $ | Prompts ajustés sur ce corpus : optimiste |
+| Contrôle, run 1 | 2/4 | 0/2 | 0,32 $ | Avant le correctif du transport MCP |
+| Contrôle, run 2 | 0/4 | 0/2 | 0,32 $ | Bug : PETCLINIC_REPO non transmis après séparation du dépôt |
+| Contrôle, run 3 | 2/4 | 0/2 | 0,33 $ | Après correctif : chiffre de référence sur ce corpus |
+| Neuf (N01 à N05) | 3/3 | 0/2 | 0,34 $ | Après correctif du vérificateur, déjà vu : optimiste |
+| Vierge (F01 à F05) | 3/3 | 0/2 | 0,35 $ | Jamais vu avant ce run, un seul essai |
 
-Les alertes du run 2 correspondent toutes à la bonne régression (relecture manuelle).
+Les scores 3/3 sont relus à la main : le script n'a pas encore les termes attendus pour les corpus N et F, et compte donc 0/3 à tort.
+
+Lecture des PR ratées du contrôle : H02 et H06 sont dans `OwnerRestControllerV1.java`. Un correctif de l'analyseur les couvre désormais, mais il n'a pas été mesuré sur des PR neuves.
 
 Limites :
 - Un seul essai par PR : l'écart entre deux runs est grand (R01 et R10 changent de camp).
